@@ -9,7 +9,7 @@
         android:layout_height="1dp"
         android:background="@color/divider_color"/>
 
-    <EditText
+    <!--<EditText
         android:id="@+id/etDestination"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
@@ -18,7 +18,17 @@
         android:layout_below="@+id/view1"
         android:padding="5dp"
         android:singleLine="true"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black" />-->
+
+    <AutoCompleteTextView
+        android:id="@+id/etDestination"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal"
+        android:hint="Enter Source"
+        android:padding="5dp"
+        android:singleLine="true"
+        android:textColor="@android:color/black"  />
 
     <ListView
         android:layout_width="fill_parent"

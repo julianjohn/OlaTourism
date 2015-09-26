@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/OlaTourism.iml" filepath="$PROJECT_DIR$/OlaTourism.iml" />
+      <module fileurl="file://$PROJECT_DIR$/olatourism/olatourism.iml" filepath="$PROJECT_DIR$/olatourism/olatourism.iml" />
+    </modules>
+  </component>
+</project>

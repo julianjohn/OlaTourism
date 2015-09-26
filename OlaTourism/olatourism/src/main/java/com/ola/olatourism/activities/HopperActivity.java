@@ -1,16 +1,22 @@
 package com.ola.olatourism.activities;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -32,7 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MainActivity extends FragmentActivity {
+public class HopperActivity extends FragmentActivity {
 
     GoogleMap map;
     ArrayList<LatLng> markerPoints;
@@ -41,54 +47,93 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.hopper_main);
 
+        initUI();
+    }
+
+    @SuppressLint("NewApi")
+    private void initUI() {
+
+        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getBaseContext());
         tvDistanceDuration = (TextView) findViewById(R.id.tv_distance_time);
 
         markerPoints = new ArrayList<LatLng>();
 
-        SupportMapFragment fm = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
+        if (status != ConnectionResult.SUCCESS) { // Google Play Services are not available
 
-        map = fm.getMap();
+            int requestCode = 10;
+            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(status, this, requestCode);
+            dialog.show();
 
-        map.setMyLocationEnabled(true);
+        } else {
 
-        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            SupportMapFragment fm = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
-            @Override
-            public void onMapClick(LatLng point) {
+            map = fm.getMap();
 
-                if(markerPoints.size()>1){
-                    markerPoints.clear();
-                    map.clear();
-                }
+            map.setMyLocationEnabled(true);
 
-                markerPoints.add(point);
+            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-                MarkerOptions options = new MarkerOptions();
+            // Creating a criteria object to retrieve provider
+            Criteria criteria = new Criteria();
 
-                options.position(point);
+            // Getting the name of the best provider
+            String provider = locationManager.getBestProvider(criteria, true);
 
-                if(markerPoints.size()==1){
-                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                }else if(markerPoints.size()==2){
-                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                }
-
-                map.addMarker(options);
-
-                if(markerPoints.size() >= 2){
-                    LatLng origin = markerPoints.get(0);
-                    LatLng dest = markerPoints.get(1);
-
-                    String url = getDirectionsUrl(origin, dest);
-
-                    DownloadTask downloadTask = new DownloadTask();
-
-                    downloadTask.execute(url);
-                }
+            // Getting Current Location
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for Activity#requestPermissions for more details.
+                return;
             }
-        });
+            Location location = locationManager.getLastKnownLocation(provider);
+
+            map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+
+                @Override
+                public void onMapClick(LatLng point) {
+
+                    if(markerPoints.size()>1){
+                        markerPoints.clear();
+                        map.clear();
+                    }
+
+                    markerPoints.add(point);
+
+                    MarkerOptions options = new MarkerOptions();
+
+                    options.position(point);
+
+                    if(markerPoints.size()==1){
+                        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                    }else if(markerPoints.size()==2){
+                        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                    }
+
+                    map.addMarker(options);
+
+                    if(markerPoints.size() >= 2){
+                        LatLng origin = markerPoints.get(0);
+                        LatLng dest = markerPoints.get(1);
+
+                        String url = getDirectionsUrl(origin, dest);
+
+                        DownloadTask downloadTask = new DownloadTask();
+
+                        downloadTask.execute(url);
+                    }
+                }
+            });
+        }
+
+
     }
 
     private String getDirectionsUrl(LatLng origin,LatLng dest){

@@ -18,7 +18,7 @@
         android:layout_below="@id/tv_distance_time"
         class="com.google.android.gms.maps.SupportMapFragment"/>
 
-    <com.ola.materialdesign.views.ButtonFloat
+    <!--<com.ola.materialdesign.views.ButtonFloat
         android:id="@+id/test_float"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -28,6 +28,6 @@
         android:layout_marginRight="10dp"
         android:background="#00E575"
         materialdesign:iconDrawable="@mipmap/eats_chicken"
-        materialdesign:animate="true" />
+        materialdesign:animate="true" />-->
 
 </RelativeLayout>

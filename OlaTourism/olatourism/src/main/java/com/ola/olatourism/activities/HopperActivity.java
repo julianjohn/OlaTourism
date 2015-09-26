@@ -1,28 +1,33 @@
 package com.ola.olatourism.activities;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Dialog;
-import android.content.pm.PackageManager;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.graphics.Color;
-import android.location.Criteria;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.ola.materialdesign.views.ButtonRectangle;
 import com.ola.olatourism.R;
 import com.ola.olatourism.parser.DirectionsJsonParser;
 
@@ -37,12 +42,19 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
-public class HopperActivity extends FragmentActivity {
+public class HopperActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
-    GoogleMap map;
+    GoogleMap googleMap;
     ArrayList<LatLng> markerPoints;
     TextView tvDistanceDuration;
+    Location mLastLocation;
+    private GoogleApiClient mGoogleApiClient;
+    private String TAG = "HopperActivity";
+    EditText etSource;
+    ButtonRectangle planHopBtn;
+    FragmentManager fragmentManager = getFragmentManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,90 +64,90 @@ public class HopperActivity extends FragmentActivity {
         initUI();
     }
 
-    @SuppressLint("NewApi")
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+    }
+
     private void initUI() {
 
-        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getBaseContext());
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+
         tvDistanceDuration = (TextView) findViewById(R.id.tv_distance_time);
+        etSource = (EditText) findViewById(R.id.etSource);
+
+        planHopBtn = (ButtonRectangle) findViewById(R.id.planHopBtn);
+        planHopBtn.setOnClickListener(new PlanHopListener());
 
         markerPoints = new ArrayList<LatLng>();
 
-        if (status != ConnectionResult.SUCCESS) { // Google Play Services are not available
+        SupportMapFragment fm = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
-            int requestCode = 10;
-            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(status, this, requestCode);
-            dialog.show();
+        googleMap = fm.getMap();
 
-        } else {
+        googleMap.setMyLocationEnabled(true);
 
-            SupportMapFragment fm = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
-            map = fm.getMap();
+            @Override
+            public void onMapClick(LatLng point) {
 
-            map.setMyLocationEnabled(true);
-
-            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-            // Creating a criteria object to retrieve provider
-            Criteria criteria = new Criteria();
-
-            // Getting the name of the best provider
-            String provider = locationManager.getBestProvider(criteria, true);
-
-            // Getting Current Location
-            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for Activity#requestPermissions for more details.
-                return;
-            }
-            Location location = locationManager.getLastKnownLocation(provider);
-
-            map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-
-                @Override
-                public void onMapClick(LatLng point) {
-
-                    if(markerPoints.size()>1){
-                        markerPoints.clear();
-                        map.clear();
-                    }
-
-                    markerPoints.add(point);
-
-                    MarkerOptions options = new MarkerOptions();
-
-                    options.position(point);
-
-                    if(markerPoints.size()==1){
-                        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                    }else if(markerPoints.size()==2){
-                        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                    }
-
-                    map.addMarker(options);
-
-                    if(markerPoints.size() >= 2){
-                        LatLng origin = markerPoints.get(0);
-                        LatLng dest = markerPoints.get(1);
-
-                        String url = getDirectionsUrl(origin, dest);
-
-                        DownloadTask downloadTask = new DownloadTask();
-
-                        downloadTask.execute(url);
-                    }
+                if (markerPoints.size() > 1) {
+                    markerPoints.clear();
+                    googleMap.clear();
                 }
-            });
-        }
 
+                markerPoints.add(point);
 
+                MarkerOptions options = new MarkerOptions();
+
+                options.position(point);
+
+                if (markerPoints.size() == 1) {
+                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                } else if (markerPoints.size() == 2) {
+                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                }
+
+                googleMap.addMarker(options);
+
+                if (markerPoints.size() >= 2) {
+                    LatLng origin = markerPoints.get(0);
+                    LatLng dest = markerPoints.get(1);
+
+                    String url = getDirectionsUrl(origin, dest);
+
+                    DownloadTask downloadTask = new DownloadTask();
+
+                    downloadTask.execute(url);
+                }
+            }
+        });
     }
 
+    private class PlanHopListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            Toast.makeText(getApplicationContext(), "clicked", Toast.LENGTH_SHORT).show();
+            DestinationFragment dFragment = new DestinationFragment();
+            // Show DialogFragment
+            dFragment.show(fragmentManager, "Dialog Fragment");
+        }
+    }
     private String getDirectionsUrl(LatLng origin,LatLng dest){
 
         String str_origin = "origin="+origin.latitude+","+origin.longitude;
@@ -186,6 +198,39 @@ public class HopperActivity extends FragmentActivity {
             urlConnection.disconnect();
         }
         return data;
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+        LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        String sourceAddress = getAddressFromCoOrdinates(latLng);
+        etSource.setText(sourceAddress);
+
+        Log.d(TAG, "sourceAddress : "+sourceAddress);
+
+        if (mLastLocation != null) {
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                    new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), 16));
+        }
+
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+        /*if (mLastLocation != null) {
+            mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
+            mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));*/
+//        }
     }
 
     private class DownloadTask extends AsyncTask<String, Void, String> {
@@ -284,7 +329,79 @@ public class HopperActivity extends FragmentActivity {
             tvDistanceDuration.setText("Distance:"+distance + ", Duration:"+duration);
 
             // Drawing polyline in the Google Map for the i-th route
-            map.addPolyline(lineOptions);
+            googleMap.addPolyline(lineOptions);
+        }
+    }
+
+    private String getAddressFromCoOrdinates(LatLng latLng) {
+
+        Geocoder geocoder;
+        List<Address> addresses;
+        geocoder = new Geocoder(this, Locale.getDefault());
+        String address1 = "";
+        String address2 = "";
+        String address3 = "";
+        String city = "";
+        String state = "";
+        String country = "";
+        String postalCode = "";
+        String knownName = "";
+
+        HashMap<String, String> mAddress = new HashMap<String, String>();
+
+        try {
+            addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+            address1 = addresses.get(0).getAddressLine(0);
+            address2 = addresses.get(0).getAddressLine(1);
+            city = addresses.get(0).getLocality();
+            state = addresses.get(0).getAdminArea();
+            country = addresses.get(0).getCountryName();
+            postalCode = addresses.get(0).getPostalCode();
+            knownName = addresses.get(0).getFeatureName();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String finalString = "";
+
+        finalString = address1 +", "+ address2+", "+city+", "+ state+", "+ country+", "+ postalCode;
+        /*if(address1 != null && !address1.equals(""))
+            finalString = finalString + ", " +address1 ;
+
+        if(address2 != null && !address2.equals(""))
+            finalString = address1 + ", ";
+        if(city != null && !city.equals(""))
+            finalString = city + ", ";
+        if(state != null && !state.equals(""))
+            finalString = state + ", ";
+
+        if(country != null && !country.equals(""))
+            finalString = country + ", ";
+
+        if(postalCode != null && !postalCode.equals(""))
+            finalString = state + ", ";
+
+        if(knownName != null && !knownName.equals(""))
+            finalString = state;
+
+        if(finalString.lastIndexOf(',') == finalString.length()){
+            finalString = finalString.substring(0, finalString.length() - 1);
+        }*/
+
+
+
+        return finalString;
+    }
+
+    public class DestinationFragment extends DialogFragment {
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.destination, container,
+                    false);
+            getDialog().setTitle("Select Places");
+            // Do something else
+            return rootView;
         }
     }
 

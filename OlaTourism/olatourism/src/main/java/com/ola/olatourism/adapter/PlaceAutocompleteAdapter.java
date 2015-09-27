@@ -46,12 +46,12 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Adapter that handles Autocomplete requests from the Places Geo Data API.
- * {@link AutocompletePrediction} results from the API are frozen and stored directly in this
- * adapter. (See {@link AutocompletePrediction#freeze()}.)
+ * {@link com.google.android.gms.location.places.AutocompletePrediction} results from the API are frozen and stored directly in this
+ * adapter. (See {@link com.google.android.gms.location.places.AutocompletePrediction#freeze()}.)
  * <p>
  * Note that this adapter requires a valid {@link com.google.android.gms.common.api.GoogleApiClient}.
  * The API client must be maintained in the encapsulating Activity, including all lifecycle and
- * connection states. The API client must be connected with the {@link Places#GEO_DATA_API} API.
+ * connection states. The API client must be connected with the {@link com.google.android.gms.location.places.Places#GEO_DATA_API} API.
  */
 public class PlaceAutocompleteAdapter
         extends ArrayAdapter<AutocompletePrediction> implements Filterable {
@@ -81,7 +81,7 @@ public class PlaceAutocompleteAdapter
     /**
      * Initializes with a resource for text rows and autocomplete query bounds.
      *
-     * @see ArrayAdapter#ArrayAdapter(Context, int)
+     * @see android.widget.ArrayAdapter#ArrayAdapter(android.content.Context, int)
      */
     public PlaceAutocompleteAdapter(Context context, GoogleApiClient googleApiClient,
                                     LatLngBounds bounds, AutocompleteFilter filter) {
@@ -192,8 +192,8 @@ public class PlaceAutocompleteAdapter
      *
      * @param constraint Autocomplete query string
      * @return Results from the autocomplete API or null if the query was not successful.
-     * @see Places#GEO_DATA_API#getAutocomplete(CharSequence)
-     * @see AutocompletePrediction#freeze()
+     * @see com.google.android.gms.location.places.Places#GEO_DATA_API#getAutocomplete(CharSequence)
+     * @see com.google.android.gms.location.places.AutocompletePrediction#freeze()
      */
     private ArrayList<AutocompletePrediction> getAutocomplete(CharSequence constraint) {
         if (mGoogleApiClient.isConnected()) {

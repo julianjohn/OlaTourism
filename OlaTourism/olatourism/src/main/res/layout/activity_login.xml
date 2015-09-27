@@ -1,0 +1,68 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    tools:context="com.ola.olatourism.activities.LoginActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:orientation="vertical"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true">
+
+       <!-- <EditText
+            android:id="@+id/edtUserID"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email"
+            android:textColorHint="@color/primaryYellow"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/primaryYellow"
+            android:background="@android:color/transparent"
+            android:textSize="@dimen/login_text_size"
+            />
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dip"
+            android:background="@color/primaryYellow" />
+
+        <EditText
+            android:id="@+id/edtPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Password"
+            android:layout_marginTop="20dp"
+            android:textColorHint="@color/primaryYellow"
+            android:inputType="textPassword"
+            android:textColor="@color/primaryYellow"
+            android:background="@android:color/transparent"
+            android:textSize="@dimen/login_text_size"
+            />
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dip"
+            android:background="@color/primaryYellow" />-->
+
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/loginButton"
+            android:layout_gravity="center"
+            android:padding="10dp"
+            android:background="@drawable/login_button_selector"
+            />
+    </LinearLayout>
+
+    <WebView
+        android:id="@+id/authWebView"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+</RelativeLayout>

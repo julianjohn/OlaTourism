@@ -45,7 +45,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.maps.GeoPoint;
 import com.ola.materialdesign.views.ButtonFlat;
 import com.ola.materialdesign.views.ButtonRectangle;
 import com.ola.olatourism.R;
@@ -179,7 +178,6 @@ public class HopperActivity extends FragmentActivity implements GoogleApiClient.
 
         @Override
         public void onClick(View v) {
-            Toast.makeText(getApplicationContext(), "clicked", Toast.LENGTH_SHORT).show();
             dFragment = new DestinationFragment();
             // Show DialogFragment
             dFragment.show(fragmentManager, "Dialog Fragment");

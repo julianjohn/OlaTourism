@@ -25,5 +25,5 @@ dependencies {
     compile 'com.google.android.gms:play-services:8.1.0'
     compile project(':materialdesign')
     compile 'org.json:json:20141113'
-
+    compile 'com.squareup.okhttp:okhttp:2.5.0'
 }

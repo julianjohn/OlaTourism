@@ -12,6 +12,4 @@ public class OlaConstants {
     public static final String AUTHORIZATION_CODE_SERVER_URL = "http://sandbox-t.olacabs.com/oauth2/authorize";
 
     public static final String USER_TOKEN = "user_token";
-
-    public static final String RATE_ESTIMATE_SERVER_URL = "http://sandbox-t.olacabs.com/v1/products";
 }

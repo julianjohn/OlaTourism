@@ -3,6 +3,7 @@ package com.ola.olatourism.activities;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.location.Address;
@@ -77,6 +78,7 @@ public class HopperActivity extends FragmentActivity implements GoogleApiClient.
     private String TAG = "HopperActivity";
     EditText etSource;
     ButtonRectangle planHopBtn;
+    ButtonRectangle planHopBtnReal;
     FragmentManager fragmentManager = getFragmentManager();
     public static ArrayList<PlacesDTO> placeList = new ArrayList<>();
 
@@ -116,7 +118,9 @@ public class HopperActivity extends FragmentActivity implements GoogleApiClient.
         etSource = (EditText) findViewById(R.id.etSource);
 
         planHopBtn = (ButtonRectangle) findViewById(R.id.planHopBtn);
+        planHopBtnReal = (ButtonRectangle) findViewById(R.id.planHopBtnReal);
         planHopBtn.setOnClickListener(new PlanHopListener());
+        planHopBtnReal.setOnClickListener(new PlanHopRealListener());
 
         markerPoints = new ArrayList<LatLng>();
 
@@ -178,9 +182,18 @@ public class HopperActivity extends FragmentActivity implements GoogleApiClient.
 
         @Override
         public void onClick(View v) {
+            Toast.makeText(getApplicationContext(), "clicked", Toast.LENGTH_SHORT).show();
             dFragment = new DestinationFragment();
             // Show DialogFragment
             dFragment.show(fragmentManager, "Dialog Fragment");
+        }
+    }
+
+    private class PlanHopRealListener implements  View.OnClickListener{
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(HopperActivity.this, TripPriorityActivity.class);
+            startActivity(intent);
         }
     }
     private String getDirectionsUrl(LatLng origin,LatLng dest){

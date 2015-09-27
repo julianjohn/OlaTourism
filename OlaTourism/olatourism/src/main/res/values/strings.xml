@@ -8,6 +8,7 @@
     <string name="title_activity_login">LoginActivity</string>
     <string name="loginButton">Login with OLA</string>
     <string name="title_activity_prepare_request_token">PrepareRequestTokenActivity</string>
-    <string name="place_details">&lt;b&gt;%1$s&lt;/b&gt;&lt;br/&gt;&lt;i&gt;Place Id: %2$s&lt;/i&gt;&lt;br/&gt;Address: %3$s&lt;br/&gt;Phone: %4$s&lt;br/&gt;Website: %5$s</string>
+    <string name="place_details">&lt;b>%1$s&lt;/b>&lt;br/>&lt;i>Place Id: %2$s&lt;/i>&lt;br/>Address: %3$s&lt;br/>Phone: %4$s&lt;br/>Website: %5$s</string>
+    <string name="title_activity_trip_priority">TripPriorityActivity</string>
 
 </resources>

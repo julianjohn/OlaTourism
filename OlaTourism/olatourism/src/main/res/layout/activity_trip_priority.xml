@@ -1,0 +1,54 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    tools:context="com.ola.olatourism.activities.TripPriorityActivity">
+
+    <TextView
+        android:id="@+id/priorityLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="22sp"
+        android:layout_marginTop="5dp"
+        android:textColor="@color/primaryYellow"
+        android:text="Best Hopping Order" />
+    <RadioGroup
+        android:id="@+id/radioPriorityType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/priorityLabel">
+
+        <RadioButton
+            android:id="@+id/radioDistance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Distance"
+            android:textSize="20sp"
+            android:textColor="@color/primaryYellow"
+            android:checked="true" />
+
+        <RadioButton
+            android:id="@+id/radioFare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:layout_marginLeft="20dp"
+            android:textColor="@color/primaryYellow"
+            android:text="Fare" />
+
+    </RadioGroup>
+    <ListView
+        android:id="@+id/placeListView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:dividerHeight="1dp"
+        android:layout_below="@+id/radioPriorityType"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="45dp"
+        android:background="@android:color/transparent"
+        android:divider="@color/divider_color"/>
+
+</RelativeLayout>

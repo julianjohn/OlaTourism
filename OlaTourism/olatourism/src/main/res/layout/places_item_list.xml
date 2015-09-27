@@ -15,7 +15,8 @@
         android:layout_gravity="center_vertical"
         android:layout_weight="0.9"
         android:text="Check"
-        android:textColor="@color/black"/>
+        android:textSize="18sp"
+        android:textColor="@color/primaryYellow"/>
 
     <ImageView
         android:id="@+id/deleteImage"

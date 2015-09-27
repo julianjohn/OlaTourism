@@ -69,6 +69,7 @@ public class LoginActivity extends Activity {
                                     Log.e("URL",split3[0]);
                                     editor.putString(OlaConstants.USER_TOKEN, split3[0]);
 
+                                    editor.commit();
                                     Intent i = new Intent(LoginActivity.this, HopperActivity.class);
                                     startActivity(i);
                                 }catch (Exception e){}
